@@ -1,6 +1,10 @@
 tensorflow
-gym
+gym==0.10.11
 tqdm
 numpy
 matplotlib
+PILLOW
+pyglet==1.3.2
+pyvirtualdisplay
+tf-agents
 
