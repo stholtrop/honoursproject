@@ -31,7 +31,7 @@ display = pyvirtualdisplay.Display(visible=0, size=(1400, 900)).start()
 
 num_iterations = 20000 # @param {type:"integer"}
 
-initial_collect_steps = 1000  # @param {type:"integer"} 
+initial_collect_steps = 1000  # @param {type:"integer"}
 collect_steps_per_iteration = 1  # @param {type:"integer"}
 replay_buffer_max_length = 100000  # @param {type:"integer"}
 
@@ -100,13 +100,9 @@ def collect_step(environment, policy, buffer):
   # Add trajectory to the replay buffer
   buffer.add_batch(traj)
 
-# This loop is so common in RL, that we provide standard implementations. 
+# This loop is so common in RL, that we provide standard implementations.
 # For more details see the drivers module.
 # https://www.tensorflow.org/agents/api_docs/python/tf_agents/drivers
-try:
-  %%time
-except:
-  pass
 
 # (Optional) Optimize by wrapping some of the code in a graph using TF function.
 agent.train = common.function(agent.train)

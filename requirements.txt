@@ -7,4 +7,5 @@ PILLOW
 pyglet==1.3.2
 pyvirtualdisplay
 tf-agents
-
+imageio
+ipython

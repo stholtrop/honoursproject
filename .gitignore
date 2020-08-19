@@ -1,0 +1,9 @@
+**/.X11-unix
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+.ipynb_checkpoints
+
+tmp*
