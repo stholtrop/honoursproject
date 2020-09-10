@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from collections import deque
-from math import factorial
+from math import factorial, isnan
 
 def nth_derivative(func, at, n):
     """
@@ -30,6 +30,11 @@ def nth_derivative(func, at, n):
         # Exit the hypothetical `with`-statement
         # Callbacks and aliases do not matter, hence `None`
         last_tape.__exit__(None, None, None)
+    diffs = diffs.numpy()
+    # Tensorflow seems to have a bug when using simple polynomials
+    # The gradient starts to produce NaNs when taking too many derivatives
+    if isnan(diffs):
+        diffs = 0.0
     return diffs
 
 def taylor_coefficients(func, at, n_terms):
@@ -39,7 +44,7 @@ def taylor_coefficients(func, at, n_terms):
     at: Arround which point to Taylor expand
     n_terms: The number of desired coefficients, zeroth term included
     """
-    return [nth_derivative(func, at, i).numpy()/factorial(i) for i in range(n_terms)]
+    return [nth_derivative(func, at, i)/factorial(i) for i in range(n_terms)]
 
 def pretty_print(coefficients):
     """
@@ -55,7 +60,10 @@ def pretty_print(coefficients):
 if __name__ == "__main__":
     def simple_func(x):
         # Can be any function or composition of which tensorflow knows the derivatives
-        return tf.math.sin(x)
-    coefficients = taylor_coefficients(simple_func, 0, 10)
+        #return tf.math.sin(x)
+        # Tensor
+        return tf.math.atan(x)
+    # 
+    coefficients = taylor_coefficients(simple_func, 0.0000001, 10)
     print()
     pretty_print(coefficients)
