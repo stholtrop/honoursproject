@@ -2,6 +2,11 @@ import tensorflow as tf
 import numpy as np
 from collections import deque
 from math import factorial, isnan
+from functools import lru_cache
+
+
+factorial = lru_cache(128)(factorial)
+
 
 def nth_derivative(func, at, n):
     """
@@ -46,7 +51,7 @@ def taylor_coefficients(func, at, n_terms):
     """
     return [nth_derivative(func, at, i)/factorial(i) for i in range(n_terms)]
 
-def pretty_print(coefficients):
+def pretty(coefficients):
     """
     Print a list of coefficients in a nice way with its powers
     """
@@ -55,15 +60,15 @@ def pretty_print(coefficients):
         result += f"{i}*x^{index} "
         if index != len(coefficients)-1:
             result += "+ "
-    print(result)
+    return result
 
 if __name__ == "__main__":
     def simple_func(x):
         # Can be any function or composition of which tensorflow knows the derivatives
         #return tf.math.sin(x)
         # Tensor
-        return tf.math.atan(x)
+        return x**2+2
     # 
-    coefficients = taylor_coefficients(simple_func, 0.0000001, 10)
+    coefficients = taylor_coefficients(simple_func, 0.0, 10)
     print()
-    pretty_print(coefficients)
+    print(pretty(coefficients))
