@@ -9,3 +9,4 @@ pyvirtualdisplay
 tf-agents
 imageio
 ipython
+tools
