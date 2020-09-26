@@ -16,7 +16,9 @@ model = keras.Sequential([
 
 new_func = flatten_function(model, 1, 1)
 
-coeffs = taylor_coefficients_vector_vector(new_func, 1, 1, [0.0], 3)
+# Feel free to adjust this value and see how the approximation becomes better
+n = 3
+coeffs = taylor_coefficients_vector_vector(new_func, 1, 1, [0.0], n)
 taylor_func = create_function_vector_vector(coeffs, 1, 1)
 batch_taylor_func = batch_vectorize(taylor_func, 1)
 points = np.linspace(-1, 1)
