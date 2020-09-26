@@ -51,8 +51,9 @@ def taylor_coefficients_vector_vector(func, n_input, n_output, at, n_terms):
     n_output: the number of outputs
     at: point to expand around
     n_terms: number of polynomial terms (highest power - 1)
-    returns a list of lists, each index represents the power of that element. 
-    The sublists contain tuples, which in turn contain the value of the partial derivative and the path that was taken.
+    Returns a list of lists of lists, each index represents the nth output.
+    These sublists contain a normal scalar-vector taylor expansion as lists.
+    In turn, these sublists contain tuples, which in turn contain the value of the partial derivative and the path that was taken.
     """
     total = []
     for i in range(n_output):
@@ -66,7 +67,10 @@ def taylor_coefficients_vector_vector(func, n_input, n_output, at, n_terms):
                 # Assuming smoothness of the function
                 diff = memo_pd(ps)
                 coefficients[power].append((diff/factorial(power), p))
-        coefficients[0] = [(func(at)[i], ())]
+        try:
+            coefficients[0] = [(func(at)[i].numpy(), ())]
+        except AttributeError:
+            coefficients[0] = [(func(at)[i], ())]
         total.append(coefficients)
     return total
 
