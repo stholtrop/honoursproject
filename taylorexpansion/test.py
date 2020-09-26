@@ -9,7 +9,8 @@ import numpy as np
 tf.random.set_seed(1)
 
 model = keras.Sequential([
-    layers.Dense(2, name="input", input_shape=(1,), activation="sigmoid"),
+    layers.Dense(5, name="input", input_shape=(1,), activation="sigmoid"),
+    layers.Dense(5, activation="tanh"),
     layers.Dense(1, name="output")
     ])
 
