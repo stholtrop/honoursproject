@@ -18,11 +18,16 @@ model = keras.Sequential([
 new_func = flatten_function(model, 1, 1)
 
 # Feel free to adjust this value and see how the approximation becomes better
-n = 3
-coeffs = taylor_coefficients_vector_vector(new_func, 1, 1, [0.0], n)
-taylor_func = create_function_vector_vector(coeffs, 1, 1)
-batch_taylor_func = batch_vectorize(taylor_func, 1)
-points = np.linspace(-1, 1)
+n = 5
+at = [0.0]
+n_input = 1
+n_output = 1
+
+coeffs = taylor_coefficients_vector_vector(new_func, n_input, n_output, at, n)
+print(pretty_print_taylor_vector(coeffs))
+taylor_func = create_function_vector_vector(coeffs, n_input, n_output, at)
+batch_taylor_func = batch_vectorize(taylor_func, n_output)
+points = np.linspace(-2, 2)
 
 batch_points = tf.reshape(points, (-1, 1))
 yg = tf.reshape(model(batch_points), (-1,)).numpy()
