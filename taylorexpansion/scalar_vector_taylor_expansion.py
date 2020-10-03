@@ -1,9 +1,12 @@
 import tensorflow as tf
 import numpy as np
 from collections import deque
-from math import factorial
+from math import factorial, isnan
 from functools import partial, lru_cache
 
+
+# Make memoized version of factorial
+factorial = lru_cache(128)(factorial)
 
 def partial_derivative(func, at, path):
     """
@@ -34,7 +37,10 @@ def partial_derivative(func, at, path):
         for t in tapes:
             t.__exit__(None, None, None)
         return 0.0
-    return diffs.numpy()
+    diffs = diffs.numpy()
+    if isnan(diffs):
+        diffs = 0.0
+    return diffs
 
 
 @lru_cache(128)
@@ -92,12 +98,12 @@ def taylor_coefficients_scalar_vector(func, n_input, at, n_terms):
         for p, ps in zip(paths, sorted_paths):
             # Assuming smoothness of the function
             diff = memo_pd(ps)
-            coefficients[power].append((diff, p))
+            coefficients[power].append((diff/factorial(power), p))
     coefficients[0] = [(func(at), ())]
     return coefficients
 
 
-def pretty_print(coefficients):
+def pretty(coefficients):
     """
     Print a list of coefficients in a nice way with its powers
     """
@@ -118,13 +124,13 @@ def pretty_print(coefficients):
             result += " + "
         result = result[:-3]
         result += ")"
-    print(result)
+    return result
 
 
 if __name__ == "__main__":
     def simple_func(x):
         # Can be any function or composition of which tensorflow knows the derivatives
-        return x[0]**2
-    coeff = taylor_coefficients_scalar_vector(simple_func, 1, [2.0, 1.0], 4)
+        return tf.math.sin(x[0])
+    coeff = taylor_coefficients_scalar_vector(simple_func, 1, [0.0, 0.0], 4)
     print(coeff)
-    pretty_print(coeff)
+    print(pretty(coeff))
