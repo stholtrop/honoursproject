@@ -67,6 +67,23 @@ def evaluate_approximation(fake_policy, filename = "taylor_expansion", num_episo
                 video.append_data(py_env.render())
     # calculate loss
 
+def compute_avg_return(environment, policy, num_episodes=10):
+
+    total_return = 0.0
+    for _ in range(num_episodes):
+
+        time_step = environment.reset()
+        episode_return = 0.0
+
+        while not time_step.is_last():
+            action_step = policy.action(time_step)
+            time_step = environment.step(action_step.action)
+            episode_return += time_step.reward
+            total_return += episode_return
+
+    avg_return = total_return / num_episodes
+    return avg_return.numpy()[0]
+
 if __name__== "__main__":
     from taylorexpansion import Taylor
     import cartpole.DQNcartpole as dqn
@@ -78,4 +95,4 @@ if __name__== "__main__":
     taylor_net = Taylor(wrapped_net, tf.convert_to_tensor([0.0,0.0,0.0,0.0]), 4, 2, 5, True, True)
     fake_policy = FakeQPolicy(taylor_net, q_policy)
     evaluate_approximation(fake_policy)
-    
+    print(compute_avg_return(env, fake_policy))
