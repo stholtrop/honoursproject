@@ -33,12 +33,14 @@ def partial_derivative(func, at, nth_output, path):
             last_tape = tapes.pop()
             diffs = last_tape.gradient(diffs, x)[i]
             last_tape.__exit__(None, None, None)
-    except TypeError:
+    except TypeError as t:
+        print(f"[Differentiation] TypeError detected, assuming 0")
         for t in tapes:
             t.__exit__(None, None, None)
         return 0.0
     diffs = diffs.numpy()
     if isnan(diffs):
+        print("[Differentiation] NaN detected, assuming 0")
         diffs = 0.0
     return diffs
 
