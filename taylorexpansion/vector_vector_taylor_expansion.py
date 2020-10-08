@@ -3,7 +3,7 @@ import numpy as np
 from collections import deque
 from math import factorial, isnan
 from functools import partial, lru_cache
-from scalar_vector_taylor_expansion import sorted_taylor_paths, taylor_paths, pretty
+from .scalar_vector_taylor_expansion import sorted_taylor_paths, taylor_paths, pretty
 
 # Make memoized version of factorial
 factorial = lru_cache(128)(factorial)

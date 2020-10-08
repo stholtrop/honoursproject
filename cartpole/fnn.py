@@ -2,11 +2,12 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 import gym
+from taylorexpansion import Taylor
 
 
 
 model = keras.Sequential([
-    layers.Dense(4, name="input", input_shape=(6,), activation="Sigmoid"),
+    layers.Dense(4, name="input", input_shape=(6,), activation="sigmoid"),
     layers.Dense(1, name="output")
     ])
 
