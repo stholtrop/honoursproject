@@ -1,6 +1,6 @@
 import tensorflow as tf
-from vector_vector_taylor_expansion import taylor_coefficients_vector_vector
-from tools import flatten_function, create_function_expression, batch_vectorize
+from .vector_vector_taylor_expansion import taylor_coefficients_vector_vector
+from .tools import flatten_function, create_function_expression, batch_vectorize
 
 class Taylor:
 

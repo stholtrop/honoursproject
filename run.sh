@@ -1,4 +1,16 @@
 #!/bin/bash
 # Run as user instead of root to prevent permission issues
-docker run -it --rm -v $(realpath $(pwd)):/tmp -w /tmp -u $(id -u):$(id -g) -e TF_CPP_MIN_LOG_LEVEL=2 honours python ./$1
-
+case $1 in 
+    runfile)
+        docker run -it --rm -v $(realpath $(pwd)):/tmp -w /tmp -u $(id -u):$(id -g) -e TF_CPP_MIN_LOG_LEVEL=2 honours python ./$2
+    ;;
+    runfilei)
+        docker run -it --rm -v $(realpath $(pwd)):/tmp -w /tmp -u $(id -u):$(id -g) -e TF_CPP_MIN_LOG_LEVEL=2 honours python -i ./$2
+    ;;
+    run)
+        docker run -it --rm -v $(realpath $(pwd)):/tmp -w /tmp -u $(id -u):$(id -g) -e TF_CPP_MIN_LOG_LEVEL=2 honours python -m $2
+    ;;
+    runi)
+        docker run -it --rm -v $(realpath $(pwd)):/tmp -w /tmp -u $(id -u):$(id -g) -e TF_CPP_MIN_LOG_LEVEL=2 honours python -i -m $2
+    ;;
+esac

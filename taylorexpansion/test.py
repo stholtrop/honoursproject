@@ -3,7 +3,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from matplotlib import pyplot as plt
 import numpy as np
-from taylor import Taylor
+from taylorexpansion import Taylor
 
 tf.random.set_seed(1)
 
