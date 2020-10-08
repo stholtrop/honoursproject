@@ -9,8 +9,8 @@ tf.random.set_seed(1)
 
 # Feel free to adjust this value and see how the approximation becomes better
 n = 5
-at = [0.0]
-n_input = 1
+at = [0.0, 1.0]
+n_input = 2
 n_output = 1
 
 model = keras.Sequential([
@@ -21,13 +21,13 @@ model = keras.Sequential([
 
 func = Taylor(model, at, n_input, n_output, n, is_batch=True)
 
-points = np.linspace(-2, 2)
+# points = np.linspace(-2, 2)
 
-batch_points = tf.reshape(points, (-1, 1))
-yg = tf.reshape(model(batch_points), (-1,)).numpy()
-yw = np.reshape(func(batch_points, batched=True), (-1,))
+# batch_points = tf.reshape(points, (-1, 1))
+# yg = tf.reshape(model(batch_points), (-1,)).numpy()
+# yw = np.reshape(func(batch_points, batched=True), (-1,))
 
-plt.plot(points, yw, label="Taylor")
-plt.plot(points, yg, label="Model")
-plt.legend()
-plt.savefig("test.jpg")
+# plt.plot(points, yw, label="Taylor")
+# plt.plot(points, yg, label="Model")
+# plt.legend()
+# plt.savefig("test.jpg")

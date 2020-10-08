@@ -1,5 +1,5 @@
 import tensorflow as tf
-from .vector_vector_taylor_expansion import taylor_coefficients_vector_vector
+from .vector_vector_taylor_expansion import taylor_coefficients_vector_vector, pretty_print_taylor_vector
 from .tools import flatten_function, create_function_expression, batch_vectorize
 
 class Taylor:
@@ -22,3 +22,9 @@ class Taylor:
             return self.batch_expanded_function(x)
         else:
             return self.expanded_function(x)
+    
+    def __repr__(self):
+        result = f"Taylor expansion of a function with {self.n_input} inputs and {self.n_output} outputs"
+        result += f"\nExpanded around {self.at} with {self.n_terms} terms"
+        result += "\n" + pretty_print_taylor_vector(self.coeffs, self.at)
+        return result

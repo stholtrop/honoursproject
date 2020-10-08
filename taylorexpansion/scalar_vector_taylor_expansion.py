@@ -103,7 +103,7 @@ def taylor_coefficients_scalar_vector(func, n_input, at, n_terms):
     return coefficients
 
 
-def pretty(coefficients):
+def pretty(coefficients, at):
     """
     Print a list of coefficients in a nice way with its powers
     """
@@ -120,7 +120,7 @@ def pretty(coefficients):
             result += str(v)
             counts = Counter(p)
             for t, n in counts.items():
-                result += "*" + variables[t] + "^" + str(n)
+                result += f"*({variables[t]}-{at[t]})^{n}"
             result += " + "
         result = result[:-3]
         result += ")"

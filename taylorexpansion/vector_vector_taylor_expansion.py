@@ -74,11 +74,11 @@ def taylor_coefficients_vector_vector(func, n_input, n_output, at, n_terms):
         total.append(coefficients)
     return total
 
-def pretty_print_taylor_vector(coeffs):
+def pretty_print_taylor_vector(coeffs, at):
     result = "Total expansion: "
     for index, i in enumerate(coeffs):
-        result += f"For output {index+1}\n"
-        result += pretty(i) + '\n'
+        result += f"\nFor output {index+1}\n"
+        result += pretty(i, at) + '\n'
     result = result[:-1]
     return result
 
