@@ -41,13 +41,5 @@ def create_function_expression(coeffs, n_input, n_output, at):
     expr += "])"
     return eval(expr)
 
-def batch_vectorize(func, n_output):
-    """
-    Transforms a function in to accepting a batch of shape (batch_size, ...)
-    """
-    def fun(x):
-        y = np.zeros((len(x), n_output))
-        for index, i in enumerate(x):
-            y[index] = func(i)
-        return y
-    return fun
+def batch_vectorize(func):
+    return lambda x: tf.map_fn(func, x)

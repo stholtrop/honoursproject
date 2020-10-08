@@ -14,7 +14,7 @@ class Taylor:
             func = flatten_function(func, n_input, n_output)
         self.coeffs = taylor_coefficients_vector_vector(func, n_input, n_output, at, n_terms)
         self.expanded_function = create_function_expression(self.coeffs, n_input, n_output, at)
-        self.batch_expanded_function = batch_vectorize(self.expanded_function, n_output)
+        self.batch_expanded_function = batch_vectorize(self.expanded_function)
 
     def __call__(self, x, batched=None):
         batch = batched if batched else self.default_batch
