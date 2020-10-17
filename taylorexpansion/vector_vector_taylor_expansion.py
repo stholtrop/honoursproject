@@ -3,7 +3,7 @@ import numpy as np
 from collections import deque
 from math import factorial, isnan
 from functools import partial, lru_cache
-from scalar_vector_taylor_expansion import sorted_taylor_paths, taylor_paths, pretty
+from .scalar_vector_taylor_expansion import sorted_taylor_paths, taylor_paths, pretty
 
 # Make memoized version of factorial
 factorial = lru_cache(128)(factorial)
@@ -33,12 +33,14 @@ def partial_derivative(func, at, nth_output, path):
             last_tape = tapes.pop()
             diffs = last_tape.gradient(diffs, x)[i]
             last_tape.__exit__(None, None, None)
-    except TypeError:
+    except TypeError as t:
+        print(f"[Differentiation] TypeError detected, assuming 0")
         for t in tapes:
             t.__exit__(None, None, None)
         return 0.0
     diffs = diffs.numpy()
     if isnan(diffs):
+        print("[Differentiation] NaN detected, assuming 0")
         diffs = 0.0
     return diffs
 
@@ -74,11 +76,11 @@ def taylor_coefficients_vector_vector(func, n_input, n_output, at, n_terms):
         total.append(coefficients)
     return total
 
-def pretty_print_taylor_vector(coeffs):
+def pretty_print_taylor_vector(coeffs, at):
     result = "Total expansion: "
     for index, i in enumerate(coeffs):
-        result += f"For output {index+1}\n"
-        result += pretty(i) + '\n'
+        result += f"\nFor output {index+1}\n"
+        result += pretty(i, at) + '\n'
     result = result[:-1]
     return result
 

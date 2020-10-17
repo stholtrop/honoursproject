@@ -27,13 +27,19 @@ def create_function_vector_vector(coeffs, n_input, n_output, at):
         return y
     return func
 
-def batch_vectorize(func, n_output):
-    """
-    Transforms a function in to accepting a batch of shape (batch_size, ...)
-    """
-    def fun(x):
-        y = np.zeros((len(x), n_output))
-        for index, i in enumerate(x):
-            y[index] = func(i)
-        return y
-    return fun
+def create_function_expression(coeffs, n_input, n_output, at):
+    expr = "lambda x: tf.convert_to_tensor(["
+    for i in range(n_output):
+        if i > 0:
+            expr += ","
+        for term in coeffs[i]:
+            for v, path in term:
+                counts = Counter(path)
+                expr += f"+{v}"
+                for nth, t in counts.items():
+                    expr += f"*(x[{nth}]-{at[i]})**{t}"
+    expr += "])"
+    return eval(expr)
+
+def batch_vectorize(func):
+    return lambda x: tf.map_fn(func, x)

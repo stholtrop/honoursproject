@@ -43,15 +43,17 @@ num_eval_episodes = 10  # @param {type:"integer"}
 eval_interval = 1000  # @param {type:"integer"}
 
 env_name = 'CartPole-v0'
-train_env = tf_py_environment.TFPyEnvironment(suite_gym.load(env_name))
-eval_env = tf_py_environment.TFPyEnvironment(suite_gym.load(env_name))
+train_py_env = suite_gym.load(env_name)
+eval_py_env = suite_gym.load(env_name)
+train_env = tf_py_environment.TFPyEnvironment(train_py_env)
+eval_env = tf_py_environment.TFPyEnvironment(eval_py_env)
 
-fc_layer_params = (50,)
+fc_layer_params = (100,)
 q_net = q_network.QNetwork(
 	train_env.observation_spec(),
 	train_env.action_spec(),
 	fc_layer_params=fc_layer_params)
-
+	
 optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=learning_rate)
 
 train_step_counter = tf.Variable(0)
@@ -65,7 +67,7 @@ agent = dqn_agent.DqnAgent(
     train_step_counter=train_step_counter)
 
 agent.initialize()
-
+random_policy = random_tf_policy.RandomTFPolicy(train_env.time_step_spec(), train_env.action_spec())
 
 def compute_avg_return(environment, policy, num_episodes=10):
 
@@ -99,6 +101,19 @@ def collect_step(environment, policy, buffer):
 
   # Add trajectory to the replay buffer
   buffer.add_batch(traj)
+  	
+def collect_data(env, policy, buffer, steps):
+  for _ in range(steps):
+    collect_step(env, policy, buffer)
+
+collect_data(train_env, random_policy, replay_buffer, steps=100)
+
+dataset = replay_buffer.as_dataset(
+    num_parallel_calls=3, 
+    sample_batch_size=batch_size, 
+    num_steps=2).prefetch(3)
+
+iterator = iter(dataset)
 
 # This loop is so common in RL, that we provide standard implementations.
 # For more details see the drivers module.
@@ -141,6 +156,17 @@ plt.ylabel('Average Return')
 plt.xlabel('Iterations')
 plt.ylim(top=250)
 
+def embed_mp4(filename):
+  """Embeds an mp4 file in the notebook."""
+  video = open(filename,'rb').read()
+  b64 = base64.b64encode(video)
+  tag = '''
+  <video width="640" height="480" controls>
+    <source src="data:video/mp4;base64,{0}" type="video/mp4">
+  Your browser does not support the video tag.
+  </video>'''.format(b64.decode())
+
+  return IPython.display.HTML(tag)
 
 def create_policy_eval_video(policy, filename, num_episodes=5, fps=30):
   filename = filename + ".mp4"
@@ -155,4 +181,4 @@ def create_policy_eval_video(policy, filename, num_episodes=5, fps=30):
   return embed_mp4(filename)
 
 
-create_policy_eval_video(agent.policy, "trained-agent")
+# create_policy_eval_video(agent.policy, "trained-agent")

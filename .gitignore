@@ -8,3 +8,7 @@ __pycache__/
 
 tmp*
 taylorexpansion/test.jpg
+test*.jpg
+*.json
+*.mp4
+anim.gif
