@@ -13,6 +13,8 @@ def normalize(un_input, bounds):
     """
     return (un_input - bounds[:, 0])/(bounds[:, 1]-bounds[:, 0])
 
+def unnormalize(n_input, bounds):
+    return bounds[:, 0] + n_input*(bounds[:, 1]-bounds[:, 0])
 
 class Approximator:
     def __init__(self, network, n_input, n_output, samples, n_terms, bounds):
@@ -65,15 +67,29 @@ class Approximator:
             result[i, :] = self.taylor[evaluation_locations[i]](input_data[i])
         return result
         
-    def compare(self, input_data):
-        """Compares the initially given neural network with the Taylor network
+    def naive_smoothness(self, input_data):
+        """Computes the smoothness of the network in comparison with the Taylor network at selected points
 
         Args:
             input_data (np.ndarray(n_samples, n_input)): The data to compare the networks on
         Returns:
-            float, comparison value
+            float: smoothness_value
         """
         return np.mean(MSE(self.network(input_data), self.__call__(input_data)).numpy())
+    
+    def naive_smoothness_uniform(self, n_point=10):
+        """Computes the smoothness of the network in comparison with the Taylor network at uniformly selected points
+
+        Args:
+            n_point (int, optional): Number of points. Defaults to 10.
+
+        Returns:
+            float: smoothness value
+        """
+        input_data = unnormalize(np.random.uniform(size=(n_point, self.n_input)), self.bounds)
+        return self.naive_smoothness(input_data)
+        
+
 
 if __name__ == "__main__":
     def test(x):
@@ -83,10 +99,12 @@ if __name__ == "__main__":
         return x**3
     X = np.array([[0,0], [1,0], [0, 1], [-1, 0], [0, -1]], dtype=np.float64)
     bounds = np.array([[-2, 2], [-2, 2]], dtype=np.float64)
-    ap = Approximator(test, 2, 2, X, 1, bounds)
-    ap2 = Approximator(test2, 2,2, X, 1, bounds)
+    ap = Approximator(test, 2, 2, X, 2, bounds)
+    ap2 = Approximator(test2, 2,2, X, 2, bounds)
     test_points = np.array([[0,0], [0.5, 0.7], [-0.1, 0.1], [1,1]], dtype=np.float64)
     print(ap.get_closest_point_normalized_vectorized(normalize(test_points, bounds)))
     print(ap(test_points))
-    print(ap.compare(test_points))
-    print(ap2.compare(test_points))
+    print(ap.naive_smoothness(test_points))
+    print(ap2.naive_smoothness(test_points))
+    print(ap.naive_smoothness_uniform(1000))
+    print(ap2.naive_smoothness_uniform(1000))
