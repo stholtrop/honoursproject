@@ -19,7 +19,7 @@ from tf_agents.environments import tf_py_environment
 from tf_agents.eval import metric_utils
 from tf_agents.metrics import tf_metrics
 from tf_agents.networks import q_network
-from tf_agents.policies import random_tf_policy
+from tf_agents.policies import random_tf_policy, policy_saver
 from tf_agents.replay_buffers import tf_uniform_replay_buffer
 from tf_agents.trajectories import trajectory
 from tf_agents.utils import common
@@ -29,7 +29,7 @@ tf.compat.v1.enable_v2_behavior()
 # Set up a virtual display for rendering OpenAI gym environments.
 display = pyvirtualdisplay.Display(visible=0, size=(1400, 900)).start()
 
-num_iterations = 20000 # @param {type:"integer"}
+num_iterations = 1000 # @param {type:"integer"}
 
 initial_collect_steps = 1000  # @param {type:"integer"}
 collect_steps_per_iteration = 1  # @param {type:"integer"}
@@ -152,11 +152,15 @@ for _ in range(num_iterations):
 avg_return = compute_avg_return(eval_env, agent.policy, 40)
 print('step = : Average Return = {0}'.format( avg_return))
 
-iterations = range(0, num_iterations + 1, eval_interval)
-plt.plot(iterations, returns)
-plt.ylabel('Average Return')
-plt.xlabel('Iterations')
-plt.ylim(top=250)
+# iterations = range(0, num_iterations + 1, eval_interval)
+# plt.plot(iterations, returns)
+# plt.ylabel('Average Return')
+# plt.xlabel('Iterations')
+# plt.ylim(top=250)
+# plt.show()
+
+# saver = policy_saver.PolicySaver(agent.policy.wrapped_policy)
+# saver.save("q_policy")
 
 def embed_mp4(filename):
   """Embeds an mp4 file in the notebook."""

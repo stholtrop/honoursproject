@@ -61,10 +61,25 @@ def generate_sample(policy, environment, n_samples):
             points.append(time_step.observation)
     return points
 
+def compute_avg_return(environment, policy, num_episodes=10):
+    total_return = 0.0
+    for _ in range(num_episodes):
+        time_step = environment.reset()
+        episode_return = 0.0
+        while not time_step.is_last():
+            action_step = policy.action(time_step)
+            time_step = environment.step(action_step.action)
+            episode_return += time_step.reward
+        total_return += episode_return
+    avg_return = total_return / num_episodes
+    return avg_return.numpy()[0]
+
         
 def get_approximator_policy(q_policy, env, n_samples, n_points, n_terms):
     wrapped_net = q_net_wrapper(q_policy._q_network)
     bounds = np.array(zip(env.observation_spec().minimum, env.observation_spec().maximum))
-    points = random.sample(generate_sample(q_policy, env, n_samples), n_points)
-    approximator = Approximator(wrapped_net, env.observation_spec().shape[0], env.action_spec().shape[0], points, n_terms, bounds)
+    points = np.array(random.sample(generate_sample(q_policy, env, n_samples), n_points))
+    n_input = env.observation_spec().shape[0]
+    n_output = 1 if env.action_spec().shape == tf.TensorShape([]) else env.action_spec().shape[0]
+    approximator = Approximator(wrapped_net, n_input, n_output, points, n_terms, bounds)
     return FakeQPolicy(approximator, q_policy)
