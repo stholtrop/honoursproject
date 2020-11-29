@@ -5,7 +5,18 @@ from .tools import flatten_function, create_function_expression, batch_vectorize
 class Taylor:
 
     def __init__(self, func, at, n_input, n_output, n_terms, is_batch=False, default_batch=False):
-        self.at =at
+        """Initializes a Taylor Network that is callable.
+
+        Args:
+            func (lambda x: y): Original network to expand
+            at (np.ndarray(n_input)): Point to Taylor expand around
+            n_input (int): Number of inputs
+            n_output (int): Number of outputs
+            n_terms (int): Number of terms in Taylor expansion
+            is_batch (bool, optional): If the the function to expand accepts batched input. Defaults to False.
+            default_batch (bool, optional): Whether to assume batched input by default. Defaults to False.
+        """
+        self.at = at
         self.n_input = n_input
         self.n_output = n_output
         self.n_terms = n_terms
@@ -17,6 +28,15 @@ class Taylor:
         self.batch_expanded_function = batch_vectorize(self.expanded_function)
 
     def __call__(self, x, batched=None):
+        """Calculate value at point from Taylor expansion
+
+        Args:
+            x (np.ndarray(n_points)): Point to calculate value at
+            batched (bool, optional): Defines behaviour, overrides default behaviour. Defaults to None.
+
+        Returns:
+            np.ndarray(n_points): Values
+        """
         batch = batched if batched else self.default_batch
         if batch:
             return self.batch_expanded_function(x)
