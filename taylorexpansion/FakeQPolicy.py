@@ -1,5 +1,5 @@
 import numpy as np
-import imageio
+import random
 
 from tf_agents.networks import q_network
 from tf_agents.environments import suite_gym, tf_py_environment
@@ -8,7 +8,7 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 from tf_agents.distributions import shifted_categorical
 from tf_agents.trajectories import policy_step
-
+from taylorexpansion.approximator import Approximator
 
 class FakeQPolicy(tf_policy.TFPolicy):
     def __init__(self, func, q_policy):
@@ -40,7 +40,6 @@ class FakeQPolicy(tf_policy.TFPolicy):
         distribution = tf.nest.pack_sequence_as(self.q_policy._action_spec, [distribution])
         return policy_step.PolicyStep(distribution, policy_state)
 
-
 def q_net_wrapper(q_net):
     # returns a wrapper that gives back a tensor
     def wrapped(x):
@@ -51,48 +50,21 @@ def get_policy(function, q_policy):
     # returns a wrapper that gives an action given a observation
     return greedy_policy.GreedyPolicy(FakeQPolicy(function, q_policy))
 
-def evaluate_approximation(fake_policy, filename = "taylor_expansion", num_episodes = 5, fps = 30):
-    py_env = suite_gym.load("CartPole-v0")
-    env = tf_py_environment.TFPyEnvironment(py_env)
-    time_step = env.reset()
-    # make video step 1
-    filename = filename + ".mp4"
-    with imageio.get_writer(filename, fps=fps) as video:
-        for _ in range(num_episodes):
-            time_step = env.reset()
-            video.append_data(py_env.render())
-            while not time_step.is_last():
-                action_step = fake_policy.action(time_step)
-                time_step = env.step(action_step.action)
-                video.append_data(py_env.render())
-
-def compute_avg_return(environment, policy, num_episodes=10):
-
-    total_return = 0.0
-    for _ in range(num_episodes):
-        print(_)
-
+def generate_sample(policy, environment, n_samples):
+    points = []
+    while len(points) < n_samples:
         time_step = environment.reset()
-        episode_return = 0.0
-
+        points.append(time_step.observation)
         while not time_step.is_last():
             action_step = policy.action(time_step)
             time_step = environment.step(action_step.action)
-            episode_return += time_step.reward
-        total_return += episode_return
+            points.append(time_step.observation)
+    return points
 
-    avg_return = total_return / num_episodes
-    return avg_return.numpy()[0]
-
-if __name__== "__main__":
-    from taylorexpansion import Taylor
-    import cartpole.DQNcartpole as dqn
-    env_name = 'CartPole-v1'
-    py_env = suite_gym.load(env_name)
-    env = tf_py_environment.TFPyEnvironment(py_env)
-    q_policy = dqn.agent.policy.wrapped_policy
+        
+def get_approximator_policy(q_policy, env, n_samples, n_points, n_terms):
     wrapped_net = q_net_wrapper(q_policy._q_network)
-    taylor_net = Taylor(wrapped_net, tf.convert_to_tensor([0.0,0.0,0.0,0.0]), 4, 2, 3, True, True)
-    fake_policy = FakeQPolicy(taylor_net, q_policy)
-    # evaluate_approximation(fake_policy)
-    print(compute_avg_return(env, fake_policy, 40))
+    bounds = np.array(zip(env.observation_spec().minimum, env.observation_spec().maximum))
+    points = random.sample(generate_sample(q_policy, env, n_samples), n_points)
+    approximator = Approximator(wrapped_net, env.observation_spec().shape[0], env.action_spec().shape[0], points, n_terms, bounds)
+    return FakeQPolicy(approximator, q_policy)

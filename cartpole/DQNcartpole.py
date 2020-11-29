@@ -42,13 +42,13 @@ log_interval = 200  # @param {type:"integer"}
 num_eval_episodes = 10  # @param {type:"integer"}
 eval_interval = 1000  # @param {type:"integer"}
 
-env_name = 'CartPole-v0'
+env_name = 'CartPole-v1'
 train_py_env = suite_gym.load(env_name)
 eval_py_env = suite_gym.load(env_name)
 train_env = tf_py_environment.TFPyEnvironment(train_py_env)
 eval_env = tf_py_environment.TFPyEnvironment(eval_py_env)
 
-fc_layer_params = (100,)
+fc_layer_params = (1000,)
 q_net = q_network.QNetwork(
 	train_env.observation_spec(),
 	train_env.action_spec(),
@@ -149,6 +149,8 @@ for _ in range(num_iterations):
     print('step = {0}: Average Return = {1}'.format(step, avg_return))
     returns.append(avg_return)
 
+avg_return = compute_avg_return(eval_env, agent.policy, 40)
+print('step = : Average Return = {0}'.format( avg_return))
 
 iterations = range(0, num_iterations + 1, eval_interval)
 plt.plot(iterations, returns)
