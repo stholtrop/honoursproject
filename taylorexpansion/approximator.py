@@ -9,11 +9,20 @@ def normalize(un_input, bounds):
         un_input (np.ndarray(n_samples, n_input)): The unnormalized input
         bounds (np.ndarray(n_input, 2)): Bounds for the input normalization
     Returns:
-        (np.ndarray(n_samples, n_input)): Normalized input
+        np.ndarray(n_samples, n_input): Normalized input
     """
     return (un_input - bounds[:, 0])/(bounds[:, 1]-bounds[:, 0])
 
 def unnormalize(n_input, bounds):
+    """Unnormalizes n-dimensional input in the unit cube
+
+    Args:
+        n_input (np.ndarray(n_samples, n_input)): The normalized input
+        bounds (np.ndarray(n_input, 2)): Bounds for th input normalization
+
+    Returns:
+        np.ndarray(n_samples, n_input): Unnormalized input
+    """
     return bounds[:, 0] + n_input*(bounds[:, 1]-bounds[:, 0])
 
 class Approximator:
@@ -44,9 +53,27 @@ class Approximator:
         self.normalized_samples = normalize(self.samples, self.bounds)
     
     def get_closest_point_normalized(self, point_normalized):
+        """Obtain the closest sample point for a given point. This is done for normalized
+        sample points in the 2-norm
+
+        Args:
+            point_normalized (np.ndarray(n_input,)): Normalized point to find closest sample to
+
+        Returns:
+            int: index of closest sample point
+        """
         return np.argmin(np.linalg.norm(self.normalized_samples - point_normalized, axis=1))
     
     def get_closest_point_normalized_vectorized(self, points_normalized):
+        """Obtain closest sample points for multiple given points. This is done for the normalized
+        sample points in th 2-norm
+
+        Args:
+            points_normalized (np.ndarray(n_points, n_input)): Normalized points to find closest sample point to
+
+        Returns:
+            np.ndarray(n_points): Indices of sample points
+        """
         result = np.empty((points_normalized.shape[0],), dtype=np.int64)
         for i in range(points_normalized.shape[0]):
             result[i] = self.get_closest_point_normalized(points_normalized[i])
