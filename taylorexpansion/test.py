@@ -9,7 +9,7 @@ tf.random.set_seed(1)
 
 # Feel free to adjust this value and see how the approximation becomes better
 n = 5
-at = [0.0, 10.0]
+at = [0.0, 1.0]
 n_input = 2
 n_output = 1
 
