@@ -58,7 +58,7 @@ def generate_sample(policy, environment, n_samples):
         while not time_step.is_last():
             action_step = policy.action(time_step)
             time_step = environment.step(action_step.action)
-            points.append(time_step.observation)
+            points.append(time_step.observation.numpy().flatten())
     return points
 
 def compute_avg_return(environment, policy, num_episodes=10):
@@ -78,6 +78,7 @@ def compute_avg_return(environment, policy, num_episodes=10):
 def get_approximator_policy(q_policy, env, n_samples, n_points, n_terms, bounds):
     wrapped_net = q_net_wrapper(q_policy._q_network)
     points = np.array(random.sample(generate_sample(q_policy, env, n_samples), n_points))
+    print(points)
     n_input = env.observation_spec().shape[0]
     action_spec = tf.nest.flatten(env.action_spec())[0]
     approximator = Approximator(wrapped_net, n_input, action_spec.maximum - action_spec.minimum + 1, points, n_terms, bounds)
