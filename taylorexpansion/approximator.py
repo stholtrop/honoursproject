@@ -49,8 +49,6 @@ class Approximator:
         # Construct Taylor network
         self.taylor = []
         for index in range(self.samples.shape[0]):
-            print(self.samples[index])
-            print(self.network, self.samples[index], self.n_input, self.n_output, self.n_terms, True, False)
             self.taylor.append(Taylor(self.network, self.samples[index], self.n_input, self.n_output, self.n_terms, is_batch=True, default_batch=False))
         self.normalized_samples = normalize(self.samples, self.bounds)
     
@@ -64,7 +62,8 @@ class Approximator:
         Returns:
             int: index of closest sample point
         """
-        return np.argmin(np.linalg.norm(self.normalized_samples - point_normalized, axis=2))
+        print("Normalized", point_normalized)
+        return np.argmin(np.linalg.norm(self.normalized_samples - point_normalized, axis=1))
     
     def get_closest_point_normalized_vectorized(self, points_normalized):
         """Obtain closest sample points for multiple given points. This is done for the normalized
