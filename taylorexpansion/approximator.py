@@ -62,7 +62,7 @@ class Approximator:
         Returns:
             int: index of closest sample point
         """
-        return np.argmin(np.linalg.norm(self.normalized_samples - point_normalized, axis=1))
+        return np.argmin(np.linalg.norm(self.normalized_samples - point_normalized, axis=2))
     
     def get_closest_point_normalized_vectorized(self, points_normalized):
         """Obtain closest sample points for multiple given points. This is done for the normalized
@@ -87,7 +87,6 @@ class Approximator:
         Returns:
             np.ndarray(n_samples, n_output)
         """
-
         evaluation_locations = self.get_closest_point_normalized_vectorized(normalize(input_data, self.bounds))
         result = np.empty((input_data.shape[0], self.n_output))
         for i in range(input_data.shape[0]):

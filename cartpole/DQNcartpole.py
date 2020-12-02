@@ -29,7 +29,7 @@ tf.compat.v1.enable_v2_behavior()
 # Set up a virtual display for rendering OpenAI gym environments.
 display = pyvirtualdisplay.Display(visible=0, size=(1400, 900)).start()
 
-num_iterations = 1000 # @param {type:"integer"}
+num_iterations = 5000 # @param {type:"integer"}
 
 initial_collect_steps = 1000  # @param {type:"integer"}
 collect_steps_per_iteration = 1  # @param {type:"integer"}
@@ -149,8 +149,8 @@ for _ in range(num_iterations):
     print('step = {0}: Average Return = {1}'.format(step, avg_return))
     returns.append(avg_return)
 
-avg_return = compute_avg_return(eval_env, agent.policy, 40)
-print('step = : Average Return = {0}'.format( avg_return))
+#avg_return = compute_avg_return(eval_env, agent.policy, 40)
+#print('step = : Average Return = {0}'.format( avg_return))
 
 # iterations = range(0, num_iterations + 1, eval_interval)
 # plt.plot(iterations, returns)
