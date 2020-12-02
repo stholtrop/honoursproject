@@ -62,7 +62,6 @@ class Approximator:
         Returns:
             int: index of closest sample point
         """
-        print("Normalized", point_normalized)
         return np.argmin(np.linalg.norm(self.normalized_samples - point_normalized, axis=1))
     
     def get_closest_point_normalized_vectorized(self, points_normalized):

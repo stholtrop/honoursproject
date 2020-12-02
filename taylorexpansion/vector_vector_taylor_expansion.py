@@ -9,7 +9,6 @@ from .scalar_vector_taylor_expansion import sorted_taylor_paths, taylor_paths, p
 factorial = lru_cache(128)(factorial)
 
 def partial_derivative(func, at, nth_output, path):
-    print(locals())
     """
     Calculates the partial derivative of a function which takes a vector and outputs a vector
     func: The function
@@ -40,7 +39,6 @@ def partial_derivative(func, at, nth_output, path):
             t.__exit__(None, None, None)
         return 0.0
     diffs = diffs.numpy()
-    print(diffs)
     if isnan(diffs):
         print("[Differentiation] NaN detected, assuming 0")
         diffs = 0.0
